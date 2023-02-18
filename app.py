@@ -1,12 +1,11 @@
-from datetime import datetime
 import secrets
+from datetime import datetime
 
 from flask import Flask, request, render_template
 from flask_cors import CORS
 
-from models import FoodModel, UserModel, db, login
+from models import FoodModel, db, login
 from sorting import selection_sort
-
 
 app = Flask(__name__)
 secret_key = secrets.token_urlsafe(32)
@@ -27,7 +26,8 @@ def index():
     all_dishes_list = []
 
     for dish in all_dishes:
-        all_dishes_list.append({'id': dish.id, 'name': dish.short_description, 'ratings': dish.ratings, 'date': datetime.strftime(dish.date, "%d.%m.%Y")})
+        all_dishes_list.append({'id': dish.id, 'name': dish.short_description, 'ratings': dish.ratings, 'date':
+                                datetime.strftime(dish.date, "%d.%m.%Y")})
 
     sorted_dishes = selection_sort(all_dishes_list, 'ratings')
 
@@ -49,10 +49,11 @@ def food():
         all_dishes_list = []
 
         for dish in all_dishes:
-            all_dishes_list.append({'id': dish.id, 'name': dish.short_description, 'date': datetime.strftime(dish.date, "%d.%m.%Y")})
-        
+            all_dishes_list.append({'id': dish.id, 'name': dish.short_description, 'date': datetime.strftime(
+                dish.date, "%d.%m.%Y")})
+
         return render_template('food.html', dishes=all_dishes_list), 200
-    
+
     if request.method == 'POST':
         return 'POST'
 
@@ -60,20 +61,13 @@ def food():
 @app.route('/food/<int:food_id>')
 def food_by_id(food_id):
     dish = FoodModel.query.filter(FoodModel.id == food_id).first()
-    dish_info = {'name': dish.short_description, 'date': datetime.strftime(dish.date, "%d.%m.%Y"), 
-                'description': dish.description, 'rate': dish.ratings, 'author': dish.author}
+    dish_info = {'name': dish.short_description, 'date': datetime.strftime(dish.date, "%d.%m.%Y"),
+                 'description': dish.description, 'rate': dish.ratings, 'author': dish.author}
     return render_template('food_by_id.html', dish_info=dish_info), 200
 
 
 @app.route('/countries')
 def countries():
-    '''
-    ans_ = FoodModel.query.all()
-    ans = []
-    for a in ans_:
-        ans.append({'id': a.id, 'sh_d': a.short_description, 'date': a.date.strftime('%Y-%m-%d')})
-    return jsonify(ans)
-    '''
     return render_template('countries.html'), 200
 
 
